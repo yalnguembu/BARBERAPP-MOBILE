@@ -1,14 +1,18 @@
 import { Text, StyleSheet, View } from "react-native";
-import Reservation from "./Reservation";
+import { Reservation } from "../../domains/reservation";
+import ReservationListItem from "./ReservationListItem";
 
-function ReservationList({ reservationList,navigation }) {
-  const { reservations, date } = reservationList;
+function ReservationList({ reservations, title, navigation }) {
   return (
     <View style={styles.main}>
-      <Text style={styles.title}>{date}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.services}>
         {reservations.map((reservation, index) => (
-          <Reservation key={index} reservation={reservation} navigation={navigation} />
+          <ReservationListItem
+            key={index}
+            reservation={new Reservation(reservation)}
+            navigation={navigation}
+          />
         ))}
       </View>
     </View>
@@ -23,15 +27,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "lightgrey",
     padding: 10,
-    paddingHorizontal:20,
+    paddingHorizontal: 20,
     backgroundColor: "#fff",
-    marginBottom:15
+    marginBottom: 15,
   },
-  
+
   title: {
     fontSize: 14,
     fontWeight: "500",
     color: "dodgerblue",
-    marginBottom:10
+    marginBottom: 10,
   },
 });

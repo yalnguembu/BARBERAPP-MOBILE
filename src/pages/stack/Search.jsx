@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -18,21 +17,21 @@ function Search({ navigation }) {
       categorie: "coupe",
       services: [
         {
-          id:1,
+          id: 1,
           title: "Coupe",
           img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
         {
-          id:1,
+          id: 1,
           title: "Tracage",
-          img: require("../../assets/images/service-2.png"),
+          img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
         {
-          id:1,
+          id: 1,
           title: "Lavage",
-          img: require("../../assets/images/service-3.png"),
+          img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
       ],
@@ -41,21 +40,21 @@ function Search({ navigation }) {
       categorie: "tracage",
       services: [
         {
-          id:1,
+          id: 1,
           title: "Teinte",
-          img: require("../../assets/images/service-4.png"),
+          img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
         {
-          id:1,
+          id: 1,
           title: "Barbe",
-          img: require("../../assets/images/service-5.png"),
+          img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
         {
-          id:1,
+          id: 1,
           title: "Tresse",
-          img: require("../../assets/images/service-6.png"),
+          img: require("../../assets/images/service-1.png"),
           desc: "lorem ipsum description text",
         },
       ],
@@ -64,7 +63,7 @@ function Search({ navigation }) {
 
   const [activeTab, setActiveTab] = useState("tout");
   const [filter, setFilter] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
   const handelActiveTab = (tab) => {
     setActiveTab(tab);
   };
@@ -72,10 +71,9 @@ function Search({ navigation }) {
     setFilter(filter);
   };
 
-  const handelSearchInput = (e) => {
-    setSearchInput(e.target.value);
+  const handelSearch = (search) => {
+    setSearch(search);
   };
-  const handelSearch = () => {};
   //   const
   const serviceFilter = (filter = null, date = null) => {
     switch (filter) {
@@ -117,30 +115,33 @@ function Search({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons size={23} name="arrow-back" color="#333333" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Services</Text>
-      </View>
-      <View style={styles.searchGroup}>
-        <TextInput
-          placeholder="recherche..."
-          value={searchInput}
-          onChange={handelSearchInput}
-          style={styles.searchInput}
-        />
-        <View style={styles.searchIconsBox}>
-          {searchInput.length > 0 && (
-            <TouchableOpacity
-              style={styles.cleanBtn}
-              onPress={() => setSearchInput("")}
-            >
-              <Ionicons size={23} name="close" color="#aaa" />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity onPress={handelSearch} style={styles.searchBtn} >
-            <Ionicons size={23} name="search" color="#aaa" />
+        <View style={styles.searchGroup}>
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons size={23} name="arrow-back" color="#aaa" />
           </TouchableOpacity>
+          <TextInput
+            placeholder="Search a service..."
+            placeholderTextColor="gray"
+            value={search}
+            onChangeText={handelSearch}
+            style={styles.searchInput}
+            autoFocus
+          />
+          <View style={styles.searchIconsBox}>
+            {search.length ? (
+              <TouchableOpacity
+                style={styles.cleanBtn}
+                onPress={() => setSearch("")}
+              >
+                <Ionicons size={23} name="close" color="#aaa" />
+              </TouchableOpacity>
+            ) : (
+              <></>
+            )}
+          </View>
         </View>
       </View>
       <View style={styles.tabBarContainer}>
@@ -175,12 +176,11 @@ const styles = StyleSheet.create({
   },
   header: {
     width: "100%",
-    padding: 15,
-    paddingTop: 25,
+    paddingBottom: 15,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor:"#fff",
-    elevation:5,
+    backgroundColor: "#fff",
+    elevation: 5,
   },
   title: {
     fontSize: 20,
@@ -188,17 +188,17 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   searchGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     width: Dimensions.get("screen").width - 30,
-    padding: 10,
+    padding: 5,
+    margin: 15,
+    paddingHorizontal: 10,
+    marginBottom: 0,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "lightgray",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "lightgray",
-    margin: 15,
-    marginBottom: 0,
   },
   searchInput: {
     flex: 1,
@@ -208,12 +208,11 @@ const styles = StyleSheet.create({
   },
   cleanBtn: {
     padding: 5,
-    borderRightColor: "lightgray",
-    borderRightWidth: 1,
+    borderLeftColor: "lightgray",
+    borderLeftWidth: 1,
   },
   searchBtn: {
     padding: 5,
-    marginLeft: 10,
   },
   searchIconsBox: {
     flexDirection: "row",

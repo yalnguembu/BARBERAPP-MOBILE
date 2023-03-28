@@ -1,39 +1,94 @@
-import { StyleSheet, Image, Pressable ,Dimensions} from "react-native";
+import axios from "axios";
+import {
+  StyleSheet,
+  Image,
+  Pressable,
+  View,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-function Service({ service, onClick }) {
-  let { img } = service;
-
-
+const Service = ({ service, onClick }) => {
+  const { picture, name, category, price, duration } = service;
+  const serverURL = "http://192.168.43.25:5000";
   return (
     <Pressable style={styles.main} onPress={onClick}>
-      <Image source={img} style={styles.img} />
+      <Image
+        source={{ uri: `${serverURL}/storage/images/services/${picture}` }}
+        style={styles.img}
+      />
+      <View style={styles.cardContent}>
+        <View style={styles.flexBox}>
+          <View style={styles.bgCat}>
+            <Text style={styles.category}>{category}</Text>
+          </View>
+          <Text style={styles.duration}>{duration} min</Text>
+        </View>
+        <Text style={styles.name}>{name && name.substring(0, 12)}</Text>
+        <View style={styles.flexBox}>
+          <Text style={styles.price}>{price + " "} xaf</Text>
+          <TouchableOpacity style={styles.button}>
+            <Icon name="calendar-check" size={26} color="#222" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </Pressable>
   );
-}
+};
 
 export default Service;
 const styles = StyleSheet.create({
   main: {
-    width: Dimensions.get("screen").width -60,
-    borderRadius: 10,
-    marginBottom: 20,
-    marginRight:15
+    width: 250,
+    borderRadius: 23,
+    marginRight: 15,
+    marginLeft: 2,
+    marginBottom: 5,
+    backgroundColor: "#fff",
+    elevation: 3,
   },
   cardContent: {
     padding: 15,
   },
   img: {
-    width: "100%",
-    height: Dimensions.get("screen").width -120,
+    width: 250,
+    height: 180,
     resizeMode: "cover",
-    borderRadius: 10,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    backgroundColor: "lightgray",
   },
-  title: {
+  name: {
     fontSize: 23,
-    fontWeight: "500",
+    fontWeight: "700",
+    color: "#232b2b",
+    marginTop: 5,
   },
-  desc:{
-    fontSize:17,
-    color:"gray"
+  flexBox: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  price: {
+    fontSize: 19,
+    color: "#232b2b",
+    marginTop: 15,
+  },
+  category: {
+    fontSize: 16,
+    color: "black",
+  },
+  bgCat: {
+    backgroundColor: "#ffcc00",
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
+  duration: {
+    fontSize: 16,
+    color: "gray",
+    padding: 5,
   },
 });

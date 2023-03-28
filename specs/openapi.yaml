@@ -1,0 +1,156 @@
+openapi: "3.0.2"
+info:
+  title: ghostbarber
+  version: "1.0"
+servers:
+  - url: http://192.168.31.240:5000
+tags:
+  - name: User
+    description: Everythings concerning user
+  - name: Authentication
+    description: Everythings concerning user
+  - name: Autorization
+    description: Everythings concerning user
+paths:
+  /auth/login:
+    post:
+      summary: "login user"
+      description: "login user"
+      operationId: login
+      requestBody:
+        description: fields need for autenticate user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthDTO"
+      responses:
+        "200":
+          description: updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponseDTO"
+        "403":
+          description: wrong crudentials
+        "400":
+          description: invalid crudentials
+  /auth/register:
+    post:
+      summary: "create user account"
+      description: "create user account"
+      operationId: register
+      requestBody:
+        description: fields need for create user account
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthDTO"
+      responses:
+        "200":
+          description: updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponseDTO"
+        "409":
+          description: email address already taken
+        "400":
+          description: invalid crudentials
+  /users:
+    get:
+      tags:
+        - User
+      summary: fecth all users
+      description: fecth all users
+      operationId: getAll
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDTO"
+        "401":
+          description: unauthorize
+  /user/{id}:
+    get:
+      tags:
+        - User
+      summary: fetch user details
+      description: fetch user details
+      operationId: getUserById
+      responses:
+        "200":
+          description: informations successfully fecthed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDTO"
+        "401":
+          description: unauthorize
+    put:
+      summary: "update user informations"
+      description: "update user informations"
+      requestBody:
+        description: fields need for update user informations
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDTO"
+      responses:
+        "200":
+          description: updated successfully
+    parameters:
+      - name: id
+        description: the user id to get
+        in: path
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+        style: simple
+components:
+  schemas:
+    UserDTO:
+      type: object
+      required:
+        - id
+        - email
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        picture:
+          type: string
+    AuthDTO:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    AuthResponseDTO:
+      type: object
+      required:
+        - id
+        - email
+        - accessToken
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        accessToken:
+          type: string

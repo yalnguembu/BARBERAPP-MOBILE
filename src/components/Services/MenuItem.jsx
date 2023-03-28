@@ -14,10 +14,9 @@ export default MenuItem;
 
 const styles = StyleSheet.create({
   menuItemText: {
-    borderBottomColor: "lightgrey",
-    borderBottomWidth: 1,
     width:"100%",
-    padding: 10,
+    padding: 15,
+    paddingHorizontal:25
   },
   menuItem: {
     fontSize: 15,

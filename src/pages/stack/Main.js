@@ -1,17 +1,10 @@
-import Ionicons from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../bottom/Home";
 import Services from "../bottom/Services";
-import Profile from "../bottom/Profile";
+import Store from "../bottom/Store";
 import Reservation from "../bottom/Reservations";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faReceipt,
-  faHome,
-  faUser,
-  faListSquares,
-} from "@fortawesome/free-solid-svg-icons";
-import { Dimensions } from "react-native";
+import { View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,55 +14,51 @@ export default function Main() {
       initialRouteName="main"
       sceneContainerStyle={{ backgroundColor: "#fff" }}
       screenOptions={({ route }) => ({
-        
-        // tabBarIcon: ({ color, size }) => {
-        //   let icon;
-        //   if (route.name === "Home") {
-        //     icon =  faHome ;
-        //   } else if (route.name === "services") {
-        //     icon = faListSquares ;
-        //   } else if (route.name === "reservations") {
-        //     icon =  faReceipt;
-        //   } else if (route.name === "profile") {
-        //     icon =  faUser ;
-        //   }
-        //   return <FontAwesomeIcon icon={icon} color={color} size={size}/>;
-        // },
         tabBarIcon: ({ color, size, focused }) => {
           let icon;
           if (route.name === "Home") {
-            icon = focused ? "grid" : "grid-outline";
+            icon = focused ? "home-variant" : "home-variant-outline";
           } else if (route.name === "services") {
-            icon = focused ? "construct" : "construct-outline";
+            icon = focused ? "apps" : "apps";
+          } else if (route.name === "store") {
+            icon = focused ? "store" : "store-outline";
           } else if (route.name === "reservations") {
-            icon = focused ? "list" : "list-outline";
-          } else if (route.name === "profile") {
-            icon = focused ? "person" : "person-outline";
+            icon = focused ? "calendar" : "calendar-outline";
           }
-          return <Ionicons name={icon} color={color} size={size} />;
+
+          return (
+            <View
+              style={{
+                padding: 8,
+                borderRadius: 10,
+                backgroundColor: focused ? "#222" : "#fff",
+              }}
+            >
+              <Icon name={icon} color={color} size={focused ? size : 30} />
+            </View>
+          );
         },
-        tabBarActiveTintColor: "#395D70",
-        tabBarInactiveTintColor: "#9AD7D9",
+        tabBarActiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#232b2b",
         headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
           height: 65,
-          position: "absolute",
-          bottom: 10,
-          left: 40,
-          width: Dimensions.get("screen").width - 80,
           backgroundColor: "#fff",
-          borderRadius: 10,
-          borderTopColor: "#fff",
-          elevation: 6,
+          borderTopWidth: 1,
+          borderTopColor: "#f1f1f1",
+          position: "absolute",
+          elevation: 4,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
         },
       })}
     >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="services" component={Services} />
+      <Tab.Screen name="store" component={Store} />
       <Tab.Screen name="reservations" component={Reservation} />
-      <Tab.Screen name="profile" component={Profile} />
     </Tab.Navigator>
   );
 }

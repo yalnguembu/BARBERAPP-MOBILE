@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/63ea78e5-41e5-4298-b0b5-3673c46cf382"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,19 +31,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsDownloadToken": "sk.ey...qg"
-        }
-      ]
-    ],
     "extra": {
       "eas": {
         "projectId": "63ea78e5-41e5-4298-b0b5-3673c46cf382"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }

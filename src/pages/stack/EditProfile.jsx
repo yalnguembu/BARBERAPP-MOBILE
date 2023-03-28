@@ -20,7 +20,7 @@ function EditProfile({ navigation }) {
   const getUser = () => {
     setEmail("mazeking@gmail.com");
     setUsername("Mazeking");
-    setImg(require("../../assets/images/service-6.png"));
+    setImg(require("../../assets/images/service-1.png"));
     setUserId("33jjjjss");
   };
   const handelEmail = (e) => {

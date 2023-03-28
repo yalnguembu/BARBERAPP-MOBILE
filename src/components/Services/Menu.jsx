@@ -1,14 +1,16 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import MenuItem from "./MenuItem";
 
 function Menu({ handelFilter }) {
   let items = [
-    { title: "Tout", action: "ALL", /*onClick: reservationFilter*/ },
-    { title: "Alphabetique", action: "ALL", /*onClick: reservationFilter*/ },
-    { title: "Date", action: "ALL", /*onClick: reservationFilter*/ },
-    { title: "Avenir", action: "ALL", /*onClick: reservationFilter*/ },
-    { title: "Ancien", action: "ALL", /*onClick: reservationFilter*/ },
-    { title: "Allez a une date", action: "ALL", /*onClick: reservationFilter*/ },
+    { title: "Alphabetique", action: "ALL" /*onClick: reservationFilter*/ },
+    { title: "Date", action: "ALL" /*onClick: reservationFilter*/ },
   ];
   return (
     <TouchableOpacity style={styles.shadow} onPress={handelFilter}>
@@ -26,23 +28,23 @@ export default Menu;
 const styles = StyleSheet.create({
   shadow: {
     width: "100%",
-    height: 1500,
-    backgroundColor: "#22222230",
+    height: Dimensions.get("screen").height,
+    backgroundColor: "#00000000",
     position: "absolute",
     top: 0,
     left: 0,
     zIndex: 10,
-    paddingTop: 60,
-    paddingRight: 55,
-    alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
   menu: {
-    minWidth: 150,
-    borderRadius: 10,
+    width: "100%",
+    borderRadius: 25,
     elevation: 5,
     borderWidth: 1,
     borderColor: "lightgray",
     backgroundColor: "#fff",
-    padding:0
+    padding: 0,
+    paddingBottom: 100,
+    paddingTop: 20,
   },
 });

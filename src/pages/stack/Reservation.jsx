@@ -7,53 +7,42 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Reservation } from "../../domains/reservation";
+import { reservations as reservationApi } from "../../services";
+import { date } from "../../utils/common";
 
-function Reservation({ navigation, route }) {
-  typeof route.params == "undefined" && navigation.goBack();
-  const { id } = route.params;
+function ReservationView({ navigation, route }) {
+  const id = route.params?.id;
+  if (!id) navigation.goBack();
+
   const [isCancelAlertVisible, setIsCancelAlertVisible] = useState(false);
-  const [reservation, setReservation] = useState({
-    id: "",
-    date: "",
-    time: "",
-    reminder: true,
-    seen: true,
-    service: {
-      title: "",
-      content: "",
-      price: 0,
-      duration: [0, 0],
-    },
-  });
-  const getReservation = () => {
-    setReservation({
-      id: "33jjjjss",
-      date: new Date().toDateString(),
-      time: new Date().toLocaleTimeString().substring(0, 5),
-      reminder: true,
-      seen: true,
-      service: {
-        title: "Wache an style coupe",
-        content:
-          "wache and style erjrevnnenvnvn is a haire cut jjddnenddbnd bnndbnnnn nijj",
-        price: 3460,
-        duration: [1, 30],
-      },
-    });
-  };
+  const [reservation, setReservation] = useState(new Reservation());
+
   const handelIsCancelAlertVisible = () => {
     setIsCancelAlertVisible(!isCancelAlertVisible);
   };
+
   const cancelReservation = () => {
     handelIsCancelAlertVisible();
     navigation.goBack();
   };
+
   const handelEdit = () => {
     navigation.navigate("editreservation", { id: "i12yuyyc" });
   };
   useEffect(() => {
-    getReservation();
+    let ignore = false;
+
+    if (!ignore)
+      reservationApi
+        .getById(id)
+        .then((response) => response.data)
+        .then((data) => {
+          setReservation(new Reservation(data));
+        });
+
+    return () => (ignore = true);
   }, []);
 
   return (
@@ -62,58 +51,60 @@ function Reservation({ navigation, route }) {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Ionicons size={30} name="arrow-back" color="#333333" />
+        <Icon size={30} name="arrow-left" color="#333333" />
       </TouchableOpacity>
       <View style={styles.main}>
         <View style={styles.header}>
-          <Text style={styles.title}>{reservation.service.title}</Text>
+          <Text style={styles.title}>{reservation.serviceName}</Text>
           <View style={styles.dateBox}>
-            <Ionicons size={18} name="time" color="#ffffffc0" />
+            <Icon size={18} name="clock-time-four" color="#ffffffc0" />
             <Text style={styles.dateText}>
-              {reservation.date + " , " + reservation.time}
+              {date().toLocalDateString(reservation.fullDate) +
+                " , " +
+                reservation.time}
             </Text>
           </View>
           {reservation.seen && (
-            <Text style={styles.seen}> <Ionicons size={18} name="checkmark-outline" color="#ffffffc0" />
-              {" "}Vue
+            <Text style={styles.seen}>
+              <Icon size={18} name="check" color="#ffffffc0" /> Vue
             </Text>
           )}
         </View>
         <View style={styles.body}>
           <View style={styles.textBox}>
             <Text style={styles.titleBox}>Description</Text>
-            <Text style={styles.descText}>{reservation.service.content}</Text>
+            <Text style={styles.descText}>
+              {reservation.serviceDescription}
+            </Text>
           </View>
           <View style={styles.textBox}>
             <Text style={styles.titleBox}>Prix</Text>
-            <Text style={styles.descText}>{reservation.service.price}</Text>
+            <Text style={styles.descText}>{reservation.servicePrice}</Text>
           </View>
           <View style={styles.textBox}>
-            <Text style={styles.titleBox}>Rappel</Text>
+            <Text style={styles.titleBox}>Maker</Text>
             <Text style={styles.descText}>
-              {reservation.reminder ? "Oui" : "Non"}
+              {/* {reservation.reminder ? "Oui" : "Non"} */}
+              anyone
             </Text>
           </View>
           <View style={styles.textBox}>
             <Text style={styles.titleBox}>Durée</Text>
             <Text style={styles.descText}>
-              {reservation.service.duration[0] !== 0 &&
-                `${reservation.service.duration[0]} h `}
-              {reservation.service.duration[1] !== 0 &&
-                `${reservation.service.duration[1]} min `}
+              {`${reservation.serviceDuration} min `}
             </Text>
           </View>
         </View>
       </View>
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={handelEdit}>
-          <Ionicons size={25} name="create-outline" color="#333333" />
+          <Icon size={25} name="calendar-edit" color="#333333" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={handelIsCancelAlertVisible}
         >
-          <Ionicons size={25} name="close" color="#333333" />
+          <Icon size={25} name="close" color="#333333" />
         </TouchableOpacity>
       </View>
       {isCancelAlertVisible && (
@@ -141,7 +132,7 @@ function Reservation({ navigation, route }) {
   );
 }
 
-export default Reservation;
+export default ReservationView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -168,7 +159,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     justifyContent: "flex-end",
-    elevation:5,
+    elevation: 5,
   },
   title: {
     fontSize: 27,

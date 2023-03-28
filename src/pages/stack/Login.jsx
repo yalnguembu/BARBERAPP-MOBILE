@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useState } from "react";
 import {
   View,
@@ -7,76 +6,61 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import BackIcon from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
-import { loginStart, loginFail, loginSuccess } from "../../redux/userReducer";
+import { setUser } from "../../redux/userReducer";
+import { auth, setAuthToken } from "../../services";
+import { storeToken } from "../../utils/asyncStorage";
 
 function Login({ navigation }) {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const state = useSelector((state) => state);
+  const { currentUser } = state.user;
+
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [secure, setSecure] = useState(true);
-  const handelEmail = (e) => setEmail(e.target.value);
-  const handelPassword = (e) => setPassword(e.target.value);
+
   const handelSecure = () => setSecure(!secure);
 
   const checkEmail = () => {
     const emailRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9]/;
-    const valideEmail = emailRegex.test(email);
-    if (email.length > 0) {
-      return valideEmail;
-    }
-    return true;
+    return email.match(emailRegex);
   };
+
   const checkPassword = () => {
     const PasswordRegex =
       /[A-Z]+.*[0-9]+.*[^\W]+|[A-Z]+.*[^\w]+.*[0-9]+[0-9]+.*[A-Z]+.*[^\w]+|[0-9]+.*[^\w]+.*[A-Z]+|[^\w]+.*[A-Z]+.*[0-9]+|[^\w]+.*[0-9]+.*[A-Z]+/;
-    const validePassword = PasswordRegex.test(password);
-    if (password.length > 0) return validePassword;
-    return true;
-  };
-  const login = () => {
-    if (
-      checkEmail &&
-      checkPassword &&
-      email.length > 1 &&
-      password.length > 1
-    ) {
-      dispatch(loginStart());
-      const URL = "http://127.0.0.1:5000/api/auth/login";
-      // const URL = "http://192.168.43.235:5000/api/auth/login";
-      fetch(URL, {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          if (json._id) {
-            dispatch(loginSuccess(json));
-            navigation.navigate("main");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          loginFail();
-        });
-      setEmail("");
-      setPassword("");
-    } else {
-      setError("veillez verifier vos identifiants");
-    }
+    return PasswordRegex.test(password);
   };
 
-  useEffect(() => {
-    if (currentUser !== null) navigation.navigate("main");
-  }, []);
+  const sigin = () => {
+    if (!email.length || !password.length) {
+      setError("Please filled you crudentials");
+    }
+    if (checkEmail() && checkPassword()) {
+      auth
+        .login({ email, password })
+        .then((response) => response.data)
+        .then(async (data) => {
+          dispatch(setUser(data));
+          setAuthToken(data.accessToken);
+          navigation.navigate("main");
+        })
+        .catch((error) => {
+          setError(error.response.data.message);
+          console.error(error.response.data.message);
+        })
+        .finally(() => {
+          setEmail("");
+          setPassword("");
+        });
+    } else {
+      setError("Please field your credential correctly");
+    }
+  };
 
   return (
     <View style={styles.main}>
@@ -85,7 +69,7 @@ function Login({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.backbtn}
         >
-          <BackIcon size={35} color="#202020" name="arrow-back" />
+          <Icon size={35} color="#202020" name="arrow-back" />
         </TouchableOpacity>
         <View style={styles.textBox}>
           <Text style={styles.h1}>Login</Text>
@@ -93,34 +77,31 @@ function Login({ navigation }) {
         </View>
         {error.length > 0 && (
           <View style={styles.errorAlert}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Icon color="orangered" name="warning" size={21} />
+            <Text style={styles.errorText}>{" " + error}</Text>
           </View>
         )}
 
         <TextInput
           style={styles.input}
           placeholder="email"
+          placeholderTextColor="gray"
           value={email}
-          onChange={handelEmail}
+          onChangeText={setEmail}
         />
-        {!checkEmail() && (
-          <Text style={styles.errorText}>Addresse email invalide</Text>
-        )}
         <View style={styles.password}>
           <TextInput
             placeholder="password"
+            placeholderTextColor="gray"
             value={password}
-            onChange={handelPassword}
+            onChangeText={setPassword}
             style={styles.passwordInput}
             secureTextEntry={secure ? true : false}
           />
           <TouchableOpacity onPress={handelSecure}>
-            <BackIcon size={25} color="#202020" name="eye" />
+            <Icon size={25} color="#202020" name="eye" />
           </TouchableOpacity>
         </View>
-        {!checkPassword() && (
-          <Text style={styles.errorText}>Mot de passe invalide</Text>
-        )}
         <TouchableOpacity onPress={() => navigation.navigate("resetpassword")}>
           <Text style={styles.forgetLink}>Password forget?</Text>
         </TouchableOpacity>
@@ -132,7 +113,7 @@ function Login({ navigation }) {
             <Text style={styles.registerLinkTxt}> Inscription</Text>
           </TouchableOpacity>
         </Text>
-        <TouchableOpacity style={styles.loginBtn} onPress={login}>
+        <TouchableOpacity style={styles.loginBtn} onPress={sigin}>
           <Text style={styles.loginBtnTxt}>Connexion</Text>
         </TouchableOpacity>
       </View>
@@ -155,19 +136,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   h1: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "700",
   },
   h2: {
-    fontSize: 24,
+    fontSize: 17,
+    color: "gray",
+    marginTop: 10,
   },
   loginBtn: {
     width: "100%",
-    height: 55,
+    height: 50,
     backgroundColor: "#202020",
     justifyContent: "center",
     alignItems: "center",
-    padding: 15,
     borderRadius: 10,
   },
   loginBtnTxt: {
@@ -205,18 +187,16 @@ const styles = StyleSheet.create({
     color: "dodgerblue",
     padding: 10,
   },
+  errorAlert: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
   errorText: {
-    color: "crimson",
-    // textAlign: "center",
+    color: "orangered",
     fontWeight: "bold",
     marginVertical: 10,
-  },
-  errorAlert: {
-    backgroundColor: "#CF414B10",
-    borderLeftColor: "#CF414B",
-    borderLeftWidth: 3,
-    marginVertical:12,
-    padding:10
+    marginBottom: 0,
   },
   registerLink: {
     fontSize: 17,

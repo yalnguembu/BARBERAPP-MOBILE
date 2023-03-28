@@ -6,18 +6,24 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import BackIcon from "react-native-vector-icons/Ionicons";
-import { useDispatch } from "react-redux";
-import { loginStart, loginFail, loginSuccess } from "../../redux/userReducer";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useSelector, useDispatch } from "react-redux";
+import { setUser } from "../../redux/userReducer";
+import { auth, setAuthToken } from "../../services";
+import { storeToken } from "../../utils/asyncStorage";
 
 function Register({ navigation }) {
   const dispatch = useDispatch();
+  const state = useSelector((state) => state);
+  const { currentUser } = state.user;
+
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [secure, setSecure] = useState(true);
   const [secure2, setSecure2] = useState(true);
+
   const handelConfirmPass = (e) => setConfirmPass(e.target.value);
   const handelEmail = (e) => setEmail(e.target.value);
   const handelPassword = (e) => setPassword(e.target.value);
@@ -28,46 +34,38 @@ function Register({ navigation }) {
     const emailRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9]/;
     const valideEmail = emailRegex.test(email);
-    if (email.length > 0) {
+    if (email) {
       return valideEmail;
     }
     return true;
   };
-
   const checkPassword = () => {
     const PasswordRegex =
       /[A-Z]+.*[0-9]+.*[^\W]+|[A-Z]+.*[^\w]+.*[0-9]+[0-9]+.*[A-Z]+.*[^\w]+|[0-9]+.*[^\w]+.*[A-Z]+|[^\w]+.*[A-Z]+.*[0-9]+|[^\w]+.*[0-9]+.*[A-Z]+/;
     const validePassword = PasswordRegex.test(password);
-    if (password.length > 0) return validePassword;
+    if (password) return validePassword;
     return true;
   };
+
   const checkConfirmPass = () => {
     if (password !== confirmPass && password.length < 0) return false;
     return true;
   };
   const register = () => {
     if (checkEmail() & checkPassword & checkConfirmPass()) {
-      dispatch(loginStart());
-      const URL = "http://127.0.0.1:5000/api/auth/register";
-      // const URL = "http://192.168.43.235:5000/api/auth/login";
-      fetch(URL, {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          if (json._id) {
-            dispatch(loginSuccess(json));
-            navigation.navigate("main");
-          }
+      auth
+        .register({ email, password })
+        .then((response) => response.data)
+        .then(async (data) => {
+          dispatch(setUser(data));
+          await storeToken(data.accessToken);
+          navigation.navigate("main");
         })
         .catch((error) => {
-          loginFail();
+          setError(error.response.data.message);
+          console.error(error.response.data.message);
         });
+
       setEmail("");
       setPassword("");
     } else {
@@ -81,7 +79,7 @@ function Register({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.backbtn}
         >
-          <BackIcon size={35} color="#202020" name="arrow-back" />
+          <Icon size={35} color="#202020" name="arrow-back" />
         </TouchableOpacity>
         <View style={styles.textBox}>
           <Text style={styles.h1}>Register</Text>
@@ -110,7 +108,7 @@ function Register({ navigation }) {
             secureTextEntry={secure ? true : false}
           />
           <TouchableOpacity onPress={handelSecure}>
-            <BackIcon size={25} color="#202020" name="eye" />
+            <Icon size={25} color="#202020" name="eye" />
           </TouchableOpacity>
         </View>
         {!checkPassword() && (
@@ -125,7 +123,7 @@ function Register({ navigation }) {
             secureTextEntry={secure2 ? true : false}
           />
           <TouchableOpacity onPress={handelSecure2}>
-            <BackIcon size={25} color="#202020" name="eye" />
+            <Icon size={25} color="#202020" name="eye" />
           </TouchableOpacity>
         </View>
 

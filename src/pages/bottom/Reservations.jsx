@@ -6,136 +6,83 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
+  Pressable,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Menu from "../../components/Services/Menu";
-import ReservationList from "../../components/Reservations/ReservationList";
+import ReservationListItem from "../../components/Reservations/ReservationListItem";
+import { reservations as reservationApi } from "../../services";
+import { Reservation } from "../../domains/reservation";
+import SortButton from "../../components/Services/SortButton";
+import SearchBar from "../../components/Home/SearchBar";
 
 function Reservations({ navigation }) {
-  
-  const reservations = [
-    {
-      date: "juillet 2022",
-      reservations: [
-        {
-          id: 0,
-          date: new Date(),
-          service: {
-            title: "Congoliliana hair cut",
-            content: "Coupe afro complex au forme du congo zairoi.",
-            prix: 3500,
-          },
-          reminder: false,
-          seen: false,
-        },
-        {
-          id: 1,
-          date: new Date(),
-          service: {
-            title: "Congoliliana hair cut",
-            content: "Coupe afro complex au forme du congo zairoi.",
-            prix: 3500,
-          },
-          reminder: false,
-          seen: false,
-        },
-      ],
-    },
-    {
-      date: "aout 2022",
-      reservations: [
-        {
-          id: 2,
-          date: new Date(),
-          service: {
-            title: "Congoliliana hair cut",
-            content: "Coupe afro complex au forme du congo zairoi.",
-            prix: 3500,
-          },
-          reminder: false,
-          seen: false,
-        },
-        {
-          id: 3,
-          date: new Date(),
-          service: {
-            title: "Congoliliana hair cut",
-            content: "Coupe afro complex au forme du congo zairoi.",
-            prix: 3500,
-          },
-          reminder: false,
-          seen: false,
-        },
-      ],
-    },
-  ];
-  const [filter, setFilter] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [reservations, setResevations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handelFilter = () => {
-    // if (option) setFilter(false);
-    setFilter(!filter);
+  const handelFilter = (filter) => {
+    setFilter(filter);
   };
-  const reservationFilter = (filter = null, date = null) => {
-    switch (filter) {
-      case "ALL":
-        console.log(filter);
-        break;
 
-      case "DATE":
-        console.log(filter);
-        break;
+  useEffect(() => {
+    const removeEventLinstener = navigation.addListener("focus", () => {
+      reservationApi
+        .getAll()
+        .then((response) => response.data)
+        .then((data) => {
+          setIsLoading(false);
+          console.log(data);
+          setResevations(data);
+        });
+    });
 
-      case "ALPHA_ASC":
-        console.log(filter);
-        break;
-
-      case "NEW":
-        console.log(filter);
-        break;
-
-      case "OLD":
-        console.log(filter);
-        break;
-
-      case "SEEN":
-        console.log(filter);
-        break;
-
-      case "GOTO_DATE":
-        console.log(filter);
-        if (date !== null) console.log(date);
-
-        break;
-
-      default:
-        break;
-    }
-  };
+    return removeEventLinstener;
+  }, [navigation]);
 
   return (
     <View>
-      {filter && <Menu handelFilter={handelFilter} />}
+      {filter ? <Menu handelFilter={handelFilter} /> : <></>}
       <View style={styles.header}>
         <Text style={styles.title}>Mes reservations</Text>
-        <View style={styles.btnGroup}>
-          <TouchableOpacity onPress={handelFilter}>
-            <Ionicons size={23} name="filter" color="#333333" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate("reservationsearch")}>
-            <Ionicons size={22} name="search" color="#333333" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={handelFilter}>
+          <Ionicons size={23} name="funnel" color="#333333" />
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.main}>
-          {reservations.map((reservation, index) => (
-            <ReservationList
-              reservationList={reservation}
-              key={index}
-              navigation={navigation}
-            />
-          ))}
-        </View>
+        {isLoading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : reservations.length ? (
+          <View style={styles.main}>
+            <Pressable
+              onPress={() => navigation.navigate("reservation-search")}
+            >
+              <SearchBar />
+            </Pressable>
+            <View style={styles.reservationsCard}>
+              {reservations.map((reservation, index) => (
+                <ReservationListItem
+                  key={index}
+                  reservation={new Reservation(reservation)}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+          </View>
+        ) : (
+          <Text
+            style={{
+              padding: 30,
+              color: "gray",
+            }}
+          >
+            You don't yet have reservation, make a reservation and it will
+            appear header
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -155,13 +102,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor:"#fff",
-    elevation:5
+    backgroundColor: "#fff",
+    elevation: 5,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "500",
+    fontSize: 23,
+    fontWeight: "700",
     marginBottom: 5,
+  },
+  loaderContainer: {
+    width: Dimensions.get("screen").width,
+    height: 500,
+    alignItems: "center",
+    justifyContent: "center",
   },
   btnGroup: {
     flexDirection: "row",
@@ -171,7 +124,7 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-    padding: 20,
+    padding: 15,
   },
   shadow: {
     width: "100%",
@@ -200,5 +153,15 @@ const styles = StyleSheet.create({
   optionItemButton: {
     padding: 10,
     fontSize: 15,
+  },
+  reservationsCard: {
+    width: "100%",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "lightgrey",
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#fff",
+    marginBottom: 15,
   },
 });
