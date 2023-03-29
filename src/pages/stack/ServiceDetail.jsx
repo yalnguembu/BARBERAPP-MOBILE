@@ -14,6 +14,7 @@ import TimePicker from "../../components/Services/TimePicker";
 import DatePicker from "../../components/Services/DatePicker";
 import { services } from "../../services/services";
 import { reservations } from "../../services/reservations";
+import { useSelector } from "react-redux";
 
 function Detail({ navigation, route }) {
   const defaultProduct = {
@@ -26,9 +27,10 @@ function Detail({ navigation, route }) {
     picture: "",
   };
 
+  const { currentUser } = useSelector((state) => state.user);
   const [service, setService] = useState(defaultProduct);
   const [date, setDate] = useState(new Date().toISOString());
-  const [time, setTime] = useState("08:30");
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [isLoading, setIsLoading] = useState(true);
 
   const reserve = () => {
@@ -40,12 +42,13 @@ function Detail({ navigation, route }) {
         id: service._id,
       },
       client: {
-        email: "client.user3@gmail.com",
-        username: "client user 2",
-        id: "64102e0fe68d740e89e57e11",
+        id: currentUser.id,
+        email: currentUser.email,
+        username: currentUser.username,
       },
       maker: "anyone",
     };
+
     console.log(reservation);
 
     reservations
@@ -58,12 +61,19 @@ function Detail({ navigation, route }) {
       });
   };
 
-  const onSelectTime = (time) => {
-    setTime(time);
+  const onSelectTime = (value) => {
+    const hours = value.split(":")[0];
+    const minutes = value.split(":")[1];
+    const dateTime = new Date();
+    dateTime.setHours(parseInt(hours));
+    dateTime.setMinutes(parseInt(minutes));
+    setTime(dateTime.toLocaleTimeString());
   };
 
-  const onSelectDate = (date) => {
-    setDate(date);
+  const onSelectDate = (value) => {
+    const newDate = new Date();
+    newDate.setDate(parseInt(date));
+    setDate(newDate);
   };
 
   useEffect(() => {

@@ -33,26 +33,20 @@ function Register({ navigation }) {
   const checkEmail = () => {
     const emailRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9]/;
-    const valideEmail = emailRegex.test(email);
-    if (email) {
-      return valideEmail;
-    }
-    return true;
+    return email.match(emailRegex);
   };
+
   const checkPassword = () => {
     const PasswordRegex =
       /[A-Z]+.*[0-9]+.*[^\W]+|[A-Z]+.*[^\w]+.*[0-9]+[0-9]+.*[A-Z]+.*[^\w]+|[0-9]+.*[^\w]+.*[A-Z]+|[^\w]+.*[A-Z]+.*[0-9]+|[^\w]+.*[0-9]+.*[A-Z]+/;
-    const validePassword = PasswordRegex.test(password);
-    if (password) return validePassword;
-    return true;
+    return password.match(PasswordRegex);
+  };
+  const checkConfirmPass = () => {
+    return password.length && password === confirmPass;
   };
 
-  const checkConfirmPass = () => {
-    if (password !== confirmPass && password.length < 0) return false;
-    return true;
-  };
   const register = () => {
-    if (checkEmail() & checkPassword & checkConfirmPass()) {
+    if (checkEmail() && checkPassword && checkConfirmPass() | true) {
       auth
         .register({ email, password })
         .then((response) => response.data)
@@ -64,10 +58,11 @@ function Register({ navigation }) {
         .catch((error) => {
           setError(error.response.data.message);
           console.error(error.response.data.message);
+        })
+        .finally(() => {
+          setEmail("");
+          setPassword("");
         });
-
-      setEmail("");
-      setPassword("");
     } else {
       setError("veillez verifier vos identifiants");
     }
@@ -87,7 +82,8 @@ function Register({ navigation }) {
         </View>
         {error.length > 0 && (
           <View style={styles.errorAlert}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Icon color="orangered" name="warning" size={21} />
+            <Text style={styles.errorText}>{" " + error}</Text>
           </View>
         )}
         <TextInput
@@ -96,9 +92,7 @@ function Register({ navigation }) {
           value={email}
           onChange={handelEmail}
         />
-        {!checkEmail() && (
-          <Text style={styles.errorText}>Addresse email invalide</Text>
-        )}
+
         <View style={styles.password}>
           <TextInput
             placeholder="password"
@@ -111,9 +105,6 @@ function Register({ navigation }) {
             <Icon size={25} color="#202020" name="eye" />
           </TouchableOpacity>
         </View>
-        {!checkPassword() && (
-          <Text style={styles.errorText}>Mot de passe invalide</Text>
-        )}
         <View style={styles.password}>
           <TextInput
             placeholder="Confirm password"
@@ -127,8 +118,10 @@ function Register({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {!checkConfirmPass() && (
+        {checkPassword.length && !checkConfirmPass() ? (
           <Text style={styles.errorText}>Les deux ne correspondent pas</Text>
+        ) : (
+          <></>
         )}
       </View>
       <View>
@@ -206,16 +199,13 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    // textAlign: "center",
     fontWeight: "bold",
     marginTop: 10,
   },
   errorAlert: {
-    backgroundColor: "#CF414B10",
-    borderLeftColor: "#CF414B",
-    borderLeftWidth: 3,
-    marginVertical: 12,
-    padding: 10,
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
   },
   registerLink: {
     fontSize: 17,

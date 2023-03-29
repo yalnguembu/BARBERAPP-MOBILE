@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import { User } from "../../domains/user";
 import { user as userApi } from "../../services";
+import axios from "axios";
 
 function Profile({ navigation }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -33,7 +34,7 @@ function Profile({ navigation }) {
   useEffect(() => {
     let ignore = false;
     userApi
-      .getById("64102e0fe68d740e89e57e11")
+      .getById(currentUser.id)
       .then((response) => response.data)
       .then((data) => {
         setUser(new User(data));
@@ -42,8 +43,6 @@ function Profile({ navigation }) {
       ignore = true;
     };
   }, []);
-
-  const serverURL = "http://192.168.43.25:5000";
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -65,7 +64,7 @@ function Profile({ navigation }) {
             {user.picture ? (
               <Image
                 source={{
-                  uri: `${serverURL}/storage/images/users/${user.picture}`,
+                  uri: `${axios.getUri()}/storage/images/users/${user.picture}`,
                 }}
                 style={styles.img}
               />

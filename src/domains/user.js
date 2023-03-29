@@ -10,21 +10,21 @@ export class User {
   }
 
   get id() {
-    return this.user?.id ?? "0";
+    return this.user?.id ?? "";
   }
   set id(value) {
     this.id = value;
   }
 
   get username() {
-    return this.user?.username ?? "username";
+    return this.user?.username ?? "";
   }
   set username(value) {
     this.username = value;
   }
 
   get email() {
-    return this.user?.email ?? "email@ghost-barber.com";
+    return this.user?.email ?? "";
   }
   set email(value) {
     this.email = value;

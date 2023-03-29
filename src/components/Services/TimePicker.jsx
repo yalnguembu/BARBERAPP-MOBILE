@@ -7,6 +7,21 @@ const times = [
   { id: 2, value: "09:30" },
   { id: 3, value: "10:00" },
   { id: 4, value: "10:30" },
+  { id: 5, value: "11:00" },
+  { id: 6, value: "11:30" },
+  { id: 7, value: "12:00" },
+  { id: 8, value: "12:30" },
+  { id: 9, value: "13:00" },
+  { id: 10, value: "13:30" },
+  { id: 11, value: "14:00" },
+  { id: 12, value: "14:30" },
+  { id: 13, value: "15:00" },
+  { id: 14, value: "15:30" },
+  { id: 15, value: "16:00" },
+  { id: 16, value: "16:30" },
+  { id: 17, value: "17:00" },
+  { id: 18, value: "17:30" },
+  { id: 19, value: "18:00" },
 ];
 
 export default function TimePicker({ onSelect }) {

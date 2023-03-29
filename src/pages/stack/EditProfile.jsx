@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -7,22 +7,20 @@ import {
   TextInput,
   Image,
   Dimensions,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useSelector } from "react-redux";
+import { user as userApi } from "../../services";
+import axios from "axios";
 
 function EditProfile({ navigation }) {
   const [isSelectImageVisible, setIsSelectImageVisible] = useState(false);
-  const [userId, setUserId] = useState({});
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
+  const [email, setEmail] = useState(currentUser.email);
+  const [username, setUsername] = useState(currentUser.username);
   const [img, setImg] = useState({});
 
-  const getUser = () => {
-    setEmail("mazeking@gmail.com");
-    setUsername("Mazeking");
-    setImg(require("../../assets/images/service-1.png"));
-    setUserId("33jjjjss");
-  };
   const handelEmail = (e) => {
     setEmail(e.target.value);
   };
@@ -36,11 +34,17 @@ function EditProfile({ navigation }) {
     navigation.goBack();
   };
   const save = () => {
-    navigation.goBack();
+    userApi
+      .update(currentUser.id, { email, username })
+      .then((response) => {
+        Alert.alert("sorry an error has occured");
+        navigation.goBack();
+      })
+      .catch((error) => {
+        Alert.alert("sorry an error has occured");
+        console.log(error);
+      });
   };
-  useEffect(() => {
-    getUser();
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -57,8 +61,20 @@ function EditProfile({ navigation }) {
       </View>
       <View style={styles.main}>
         <View style={styles.imgContainer}>
-          <Image source={img} style={styles.img}></Image>
-          <TouchableOpacity style={styles.pictureBtn} onPress={handelIsSelectImageVisible}>
+          {currentUser.picture ? (
+            <Image
+              source={{
+                uri: `${axios.getUri()}/storage/images/users/${user.picture}`,
+              }}
+              style={styles.img}
+            />
+          ) : (
+            <></>
+          )}
+          <TouchableOpacity
+            style={styles.pictureBtn}
+            onPress={handelIsSelectImageVisible}
+          >
             <Ionicons size={30} name="camera-outline" color="#333333" />
           </TouchableOpacity>
         </View>
@@ -80,7 +96,10 @@ function EditProfile({ navigation }) {
         </View>
       </View>
       {isSelectImageVisible && (
-        <TouchableOpacity style={styles.selectImgContainer} onPress={handelIsSelectImageVisible}>
+        <TouchableOpacity
+          style={styles.selectImgContainer}
+          onPress={handelIsSelectImageVisible}
+        >
           <View style={styles.selectImgMain}>
             <View style={styles.flexBox}>
               <Text style={styles.selectImgTxt}>Photo de profile</Text>
@@ -148,8 +167,9 @@ const styles = StyleSheet.create({
   imgContainer: {
     marginRight: 10,
     alignSelf: "center",
-    // marginVertical: 15,
     overflow: "hidden",
+    backgroundColor: "gray",
+    borderRadius: 1000,
   },
   img: {
     width: 155,
@@ -235,7 +255,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginVertical: 10,
     marginRight: 30,
-    width:70,
+    width: 70,
   },
   selectImgBtnTxt: {
     fontWeight: "bold",
@@ -244,9 +264,9 @@ const styles = StyleSheet.create({
   },
   selectImgBtnTxt2: {
     fontSize: 16,
-    fontWeight:"600",
+    fontWeight: "600",
     textAlign: "center",
-    color:"gray",
-    marginTop:10
+    color: "gray",
+    marginTop: 10,
   },
 });

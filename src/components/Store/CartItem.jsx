@@ -8,14 +8,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import axios from "axios";
 
-const CartItem = ({ product }) => {
-  const serverURL = "http://192.168.43.25:5000";
-
+const CartItem = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: `${serverURL}/storage/images/services/service-8.png` }}
+        source={{
+          uri: `${axios.getUri()}/storage/images/services/service-8.png`,
+        }}
         style={styles.image}
       />
       <View style={styles.main}>

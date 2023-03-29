@@ -6,14 +6,15 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import axios from "axios";
 
 const ServiceHorizontal = ({ service, onClick }) => {
   const { picture, name, category } = service;
-  const serverURL = "http://192.168.43.25:5000";
+
   return (
     <View style={styles.main}>
       <Image
-        source={{ uri: `${serverURL}/storage/images/services/${picture}` }}
+        source={{ uri: `${axios.getUri()}/storage/images/services/${picture}` }}
         style={styles.img}
       />
       <View style={styles.cardContent}>

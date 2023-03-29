@@ -202,6 +202,6 @@ const styles = StyleSheet.create({
   servicesBox: {
     width: Dimensions.get("screen").width,
     marginTop: 15,
-    minHeight:15
+    minHeight: 15,
   },
 });

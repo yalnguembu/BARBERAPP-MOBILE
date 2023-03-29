@@ -11,11 +11,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Service = ({ service, onClick }) => {
   const { picture, name, category, price, duration } = service;
-  const serverURL = "http://192.168.43.25:5000";
   return (
     <Pressable style={styles.main} onPress={onClick}>
       <Image
-        source={{ uri: `${serverURL}/storage/images/services/${picture}` }}
+        source={{ uri: `${axios.getUri()}/storage/images/services/${picture}` }}
         style={styles.img}
       />
       <View style={styles.cardContent}>

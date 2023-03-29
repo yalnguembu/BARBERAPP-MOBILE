@@ -6,6 +6,6 @@ export const auth = {
   },
 
   register: async (data) => {
-    return await axios.post("/auth/register", data);
+    return await axios.post("/auth/register", { ...data });
   },
 };

@@ -33,7 +33,7 @@ function Login({ navigation }) {
   const checkPassword = () => {
     const PasswordRegex =
       /[A-Z]+.*[0-9]+.*[^\W]+|[A-Z]+.*[^\w]+.*[0-9]+[0-9]+.*[A-Z]+.*[^\w]+|[0-9]+.*[^\w]+.*[A-Z]+|[^\w]+.*[A-Z]+.*[0-9]+|[^\w]+.*[0-9]+.*[A-Z]+/;
-    return PasswordRegex.test(password);
+    return password.match(PasswordRegex)
   };
 
   const sigin = () => {

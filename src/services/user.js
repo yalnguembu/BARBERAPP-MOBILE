@@ -8,4 +8,8 @@ export const user = {
   getById: async (id) => {
     return await axios.get(`/user/${id}`);
   },
+
+  update: async (id, data) => {
+    return await axios.put(`/user/${id}`, { ...data });
+  },
 };
