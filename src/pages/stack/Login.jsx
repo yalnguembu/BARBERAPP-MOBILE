@@ -10,7 +10,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userReducer";
 import { auth, setAuthToken } from "../../services";
-import { storeToken } from "../../utils/asyncStorage";
 
 function Login({ navigation }) {
   const dispatch = useDispatch();

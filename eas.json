@@ -11,7 +11,8 @@
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
-      }
+      },
+      "channel": "staging"
     },
     "preview3": {
       "developmentClient": true
