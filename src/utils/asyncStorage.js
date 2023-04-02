@@ -4,7 +4,7 @@ export const storeToken = async (token) => {
   try {
     await AsyncStorage.setItem("accessToken", JSON.stringify(token));
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -13,7 +13,7 @@ export const getToken = async () => {
     const token = await AsyncStorage.getItem("accessToken");
     return token ? JSON.parse(token) : "";
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 

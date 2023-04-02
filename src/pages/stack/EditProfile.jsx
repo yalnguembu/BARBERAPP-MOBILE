@@ -10,15 +10,17 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { user as userApi } from "../../services";
 import axios from "axios";
+import { setUser } from "../../redux/userReducer";
 
 function EditProfile({ navigation }) {
-  const [isSelectImageVisible, setIsSelectImageVisible] = useState(false);
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const [isSelectImageVisible, setIsSelectImageVisible] = useState(false);
   const [email, setEmail] = useState(currentUser.email);
-  const [username, setUsername] = useState(currentUser.username);
+  const [username, setUsername] = useState(currentUser.username ?? "");
   const [img, setImg] = useState({});
 
   const handelEmail = (e) => {
@@ -36,8 +38,10 @@ function EditProfile({ navigation }) {
   const save = () => {
     userApi
       .update(currentUser.id, { email, username })
-      .then((response) => {
-        Alert.alert("sorry an error has occured");
+      .then((response) => response.data)
+      .then((data) => {
+        Alert.alert("it is okay");
+        dispatch(setUser(data));
         navigation.goBack();
       })
       .catch((error) => {

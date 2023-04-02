@@ -10,27 +10,21 @@ import {
   Pressable,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Menu from "../../components/Services/Menu";
 import ReservationListItem from "../../components/Reservations/ReservationListItem";
 import { reservations as reservationApi } from "../../services";
 import { Reservation } from "../../domains/reservation";
 import SearchBar from "../../components/Home/SearchBar";
 import { useSelector } from "react-redux";
 
-function Reservations({ navigation }) {
+function ArchivedReservations({ navigation }) {
   const { currentUser } = useSelector((state) => state.user);
-  const [filter, setFilter] = useState("");
   const [reservations, setResevations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const handelFilter = (filter) => {
-    setFilter(filter);
-  };
 
   useEffect(() => {
     const removeEventLinstener = navigation.addListener("focus", () => {
       reservationApi
-        .getByClient(currentUser.id)
+        .getArchivedByClient(currentUser.id)
         .then((response) => response.data)
         .then((data) => {
           setIsLoading(false);
@@ -46,70 +40,59 @@ function Reservations({ navigation }) {
 
   return (
     <View>
-      {filter ? <Menu handelFilter={handelFilter} /> : <></>}
       <View style={styles.header}>
-        <Text style={styles.title}>Mes reservations</Text>
-        <TouchableOpacity onPress={() => {}}>
-          <Ionicons size={23} name="funnel" color="#333333" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons size={23} name="arrow-back" color="#333333" />
         </TouchableOpacity>
+        <Text style={styles.title}>Archived reservation</Text>
       </View>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.main}>
-          <TouchableOpacity
-            style={styles.ArchivedButton}
-            onPress={() => navigation.navigate("archived-reservation")}
+        {isLoading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : reservations.length ? (
+          <View style={styles.main}>
+            <Pressable
+              onPress={() => navigation.navigate("reservation-search")}
+            >
+              <SearchBar />
+            </Pressable>
+            <Text style={styles.h1}>Passed reservations</Text>
+            <View style={styles.reservationsCard}>
+              {reservations.map((reservation, index) => (
+                <ReservationListItem
+                  key={index}
+                  reservation={new Reservation(reservation)}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+          </View>
+        ) : (
+          <Text
+            style={{
+              padding: 30,
+              color: "gray",
+            }}
           >
-            <Ionicons name="archive" size={23} color="lightgray" />
-            <Text style={styles.ArchivedButtonText}>Archived reservations</Text>
-          </TouchableOpacity>
-          {isLoading ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" />
-            </View>
-          ) : reservations.length ? (
-            <View>
-              <Pressable
-                onPress={() => navigation.navigate("reservation-search")}
-              >
-                <SearchBar />
-              </Pressable>
-              <Text style={styles.h1}>Incomming reservations</Text>
-              <View style={styles.reservationsCard}>
-                {reservations.map((reservation, index) => (
-                  <ReservationListItem
-                    key={index}
-                    reservation={new Reservation(reservation)}
-                    navigation={navigation}
-                  />
-                ))}
-              </View>
-            </View>
-          ) : (
-            <View style={styles.loaderContainer}>
-              <Text
-                style={{
-                  padding: 30,
-                  color: "gray",
-                }}
-              >
-                You don't yet have reservation, make a reservation and it will
-                appear header
-              </Text>
-            </View>
-          )}
-        </View>
+            You don't yet have reservation, make a reservation and it will
+            appear header
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
 }
 
-export default Reservations;
+export default ArchivedReservations;
 
 const styles = StyleSheet.create({
   container: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
     paddingBottom: 50,
+    backgroundColor: "white",
   },
   header: {
     width: "100%",
@@ -117,13 +100,14 @@ const styles = StyleSheet.create({
     paddingTop: 25,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: "#fff",
     elevation: 5,
   },
   title: {
     fontSize: 23,
     fontWeight: "700",
+    marginBottom: 5,
+    marginLeft: 10,
   },
   loaderContainer: {
     width: Dimensions.get("screen").width,
@@ -184,7 +168,6 @@ const styles = StyleSheet.create({
   },
   ArchivedButton: {
     borderWidth: 1,
-    height:60,
     borderRadius: 5,
     flexDirection: "row",
     flex: 1,
@@ -193,6 +176,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderColor: "lightgray",
     alignItems: "center",
+    marginBottom: 20,
   },
   ArchivedButtonText: {
     marginLeft: 10,

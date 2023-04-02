@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
+import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import TimePicker from "../../components/Services/TimePicker";
 import DatePicker from "../../components/Services/DatePicker";
@@ -48,8 +49,6 @@ function Detail({ navigation, route }) {
       },
       maker: "anyone",
     };
-
-    console.log(reservation);
 
     reservations
       .create(reservation)
@@ -101,7 +100,7 @@ function Detail({ navigation, route }) {
         <View>
           <View>
             <Image
-              source={require(`../../assets/images/service-default.png`)}
+              source={{ uri: `${axios.getUri()}/storage/images/services/${service.picture}` }}
               style={styles.imageBg}
               resizeMethod="resize"
             />
@@ -135,14 +134,14 @@ function Detail({ navigation, route }) {
               <View sty4={{ marginTop: 15 }}>
                 <View style={styles.flexBox}>
                   <Text>Date</Text>
-                  <Icon name="arrow-forward" size={15} />
+                  <Icon name="chevron-forward" size={15} />
                 </View>
                 <DatePicker onSelect={onSelectDate} />
               </View>
               <View sty4={{ marginTop: 15 }}>
                 <View style={styles.flexBox}>
                   <Text>Hour</Text>
-                  <Icon name="arrow-forward" size={15} />
+                  <Icon name="chevron-forward" size={15} />
                 </View>
                 <TimePicker onSelect={onSelectTime} />
               </View>
@@ -177,8 +176,6 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
-    flexDirection: "column",
-    justifyContent: "space-between",
   },
   backButton: {
     position: "absolute",

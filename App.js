@@ -18,12 +18,13 @@ import Notification from "./src/pages/stack/Notifications";
 import EditReservation from "./src/pages/stack/EditReservation";
 import ReservationSearch from "./src/pages/stack/ReservationSearch";
 import { store } from "./src/redux/store";
+import ArchivedReservations from "./src/pages/stack/ArchivedReservations";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   LogBox.ignoreLogs(["Remote debugger"]);
-  
+
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -45,6 +46,10 @@ export default function App() {
           <Stack.Screen name="product-detail" component={ProductDetail} />
           <Stack.Screen name="editprofile" component={EditProfile} />
           <Stack.Screen name="reservation" component={Reservation} />
+          <Stack.Screen
+            name="archived-reservation"
+            component={ArchivedReservations}
+          />
           <Stack.Screen name="notification" component={Notification} />
           <Stack.Screen
             name="reservationsearch"

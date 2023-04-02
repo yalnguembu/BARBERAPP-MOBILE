@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   ActivityIndicator,
+  Dimensions
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SearchBar from "../../components/Home/SearchBar";
@@ -45,7 +46,7 @@ function Services({ navigation }) {
         </Pressable>
         <View style={styles.servicesBox}>
           {isLoading ? (
-            <View>
+            <View style={styles.loaderContainer}>
               <ActivityIndicator size="large" />
             </View>
           ) : services.length ? (
@@ -96,6 +97,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#fff",
     elevation: 5,
+  },
+  loaderContainer: {
+    width: Dimensions.get("screen").width,
+    height: 500,
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
     fontSize: 23,

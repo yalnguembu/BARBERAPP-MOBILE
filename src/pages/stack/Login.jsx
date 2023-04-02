@@ -7,16 +7,13 @@ import {
   TextInput,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userReducer";
 import { auth, setAuthToken } from "../../services";
 import { storeToken } from "../../utils/asyncStorage";
 
 function Login({ navigation }) {
   const dispatch = useDispatch();
-  const state = useSelector((state) => state);
-  const { currentUser } = state.user;
-
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +30,7 @@ function Login({ navigation }) {
   const checkPassword = () => {
     const PasswordRegex =
       /[A-Z]+.*[0-9]+.*[^\W]+|[A-Z]+.*[^\w]+.*[0-9]+[0-9]+.*[A-Z]+.*[^\w]+|[0-9]+.*[^\w]+.*[A-Z]+|[^\w]+.*[A-Z]+.*[0-9]+|[^\w]+.*[0-9]+.*[A-Z]+/;
-    return password.match(PasswordRegex)
+    return password.match(PasswordRegex);
   };
 
   const sigin = () => {
@@ -51,7 +48,7 @@ function Login({ navigation }) {
         })
         .catch((error) => {
           setError(error.response.data.message);
-          console.error(error.response.data.message);
+          console.log(error.response.data.message);
         })
         .finally(() => {
           setEmail("");
@@ -75,7 +72,7 @@ function Login({ navigation }) {
           <Text style={styles.h1}>Login</Text>
           <Text style={styles.h2}>Content de vous revoir.</Text>
         </View>
-        {error.length > 0 && (
+        {error?.length > 0 && (
           <View style={styles.errorAlert}>
             <Icon color="orangered" name="warning" size={21} />
             <Text style={styles.errorText}>{" " + error}</Text>

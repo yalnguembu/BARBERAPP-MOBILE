@@ -1,7 +1,7 @@
 import { Text, StyleSheet, Pressable, View } from "react-native";
 
 function Reservation({ reservation, navigation }) {
-  const { id, date, serviceName, time, serviceDuration } =
+  const { id, date, serviceName, time, serviceDuration, isCanceled } =
     reservation;
   return (
     <Pressable
@@ -12,11 +12,20 @@ function Reservation({ reservation, navigation }) {
         <Text style={styles.dayNumeric}>{date.date}</Text>
         <Text style={styles.dayString}>{date.day}</Text>
       </View>
-      <View style={styles.textBox}>
+      <View>
         <Text style={styles.title}>{serviceName}</Text>
-        <Text style={styles.duration}>
-          {time} - {serviceDuration}
-        </Text>
+        <View style={styles.textBox}>
+          <Text style={styles.duration}>
+            {time} - {serviceDuration + " min"}
+          </Text>
+          {isCanceled ? (
+            <View style={styles.canceledBox}>
+              <Text style={styles.canceledText}>canceled</Text>
+            </View>
+          ) : (
+            <></>
+          )}
+        </View>
       </View>
     </Pressable>
   );
@@ -51,5 +60,22 @@ const styles = StyleSheet.create({
   duration: {
     fontSize: 15,
     color: "gray",
+  },
+  textBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  canceledBox: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "red",
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    marginLeft: 20,
+  },
+  canceledText: {
+    color: "red",
+    fontSize: 14,
   },
 });

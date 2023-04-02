@@ -10,7 +10,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../redux/userReducer";
 import { auth, setAuthToken } from "../../services";
-import { storeToken } from "../../utils/asyncStorage";
 
 function Register({ navigation }) {
   const dispatch = useDispatch();
@@ -51,17 +50,19 @@ function Register({ navigation }) {
         .register({ email, password })
         .then((response) => response.data)
         .then(async (data) => {
+          console.log(data);
           dispatch(setUser(data));
-          await storeToken(data.accessToken);
+          setAuthToken(data.accessToken);
           navigation.navigate("main");
         })
         .catch((error) => {
-          setError(error.response.data.message);
-          console.error(error.response.data.message);
+          setError(error.respone ? error.response.data.message : error);
+          console.log(error.respone ? error.response.data.message : error);
         })
         .finally(() => {
           setEmail("");
           setPassword("");
+          setConfirmPass("");
         });
     } else {
       setError("veillez verifier vos identifiants");

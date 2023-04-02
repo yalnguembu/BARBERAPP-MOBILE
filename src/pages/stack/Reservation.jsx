@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Reservation } from "../../domains/reservation";
-import { reservations as reservationApi } from "../../services";
+import { reservations as reservationApi, reservations } from "../../services";
 import { date } from "../../utils/common";
 
 function ReservationView({ navigation, route }) {
@@ -19,18 +19,29 @@ function ReservationView({ navigation, route }) {
   const [isCancelAlertVisible, setIsCancelAlertVisible] = useState(false);
   const [reservation, setReservation] = useState(new Reservation());
 
-  const handelIsCancelAlertVisible = () => {
+  const toggleIsCancelAlertVisible = () => {
     setIsCancelAlertVisible(!isCancelAlertVisible);
   };
 
   const cancelReservation = () => {
-    handelIsCancelAlertVisible();
-    navigation.goBack();
+    toggleIsCancelAlertVisible();
+    reservations
+      .cancel(id)
+      .then(() => {
+        navigation.goBack();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        toggleIsCancelAlertVisible();
+      });
   };
 
   const handelEdit = () => {
-    navigation.navigate("editreservation", { id: "i12yuyyc" });
+    navigation.navigate("editreservation", { id: reservation.id });
   };
+
   useEffect(() => {
     let ignore = false;
 
@@ -39,6 +50,7 @@ function ReservationView({ navigation, route }) {
         .getById(id)
         .then((response) => response.data)
         .then((data) => {
+          console.log(new Reservation(data).isCanceled);
           setReservation(new Reservation(data));
         });
 
@@ -53,60 +65,76 @@ function ReservationView({ navigation, route }) {
       >
         <Icon size={30} name="arrow-left" color="#333333" />
       </TouchableOpacity>
-      <View style={styles.main}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{reservation.serviceName}</Text>
-          <View style={styles.dateBox}>
-            <Icon size={18} name="clock-time-four" color="#ffffffc0" />
-            <Text style={styles.dateText}>
-              {date().toLocalDateString(reservation.fullDate) +
-                " , " +
-                reservation.time}
-            </Text>
-          </View>
-          {reservation.seen && (
-            <Text style={styles.seen}>
-              <Icon size={18} name="check" color="#ffffffc0" /> Vue
-            </Text>
-          )}
-        </View>
-        <View style={styles.body}>
-          <View style={styles.textBox}>
-            <Text style={styles.titleBox}>Description</Text>
-            <Text style={styles.descText}>
-              {reservation.serviceDescription}
-            </Text>
-          </View>
-          <View style={styles.textBox}>
-            <Text style={styles.titleBox}>Prix</Text>
-            <Text style={styles.descText}>{reservation.servicePrice}</Text>
-          </View>
-          <View style={styles.textBox}>
-            <Text style={styles.titleBox}>Maker</Text>
-            <Text style={styles.descText}>
-              {/* {reservation.reminder ? "Oui" : "Non"} */}
-              anyone
-            </Text>
-          </View>
-          <View style={styles.textBox}>
-            <Text style={styles.titleBox}>Durée</Text>
-            <Text style={styles.descText}>
-              {`${reservation.serviceDuration} min `}
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={handelEdit}>
-          <Icon size={25} name="calendar-edit" color="#333333" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handelIsCancelAlertVisible}
-        >
-          <Icon size={25} name="close" color="#333333" />
-        </TouchableOpacity>
-      </View>
+      <>
+        {reservation ? (
+          <>
+            <View style={styles.main}>
+              <View style={styles.header}>
+                <Text style={styles.title}>{reservation.serviceName}</Text>
+                <View style={styles.dateBox}>
+                  <Icon size={18} name="calendar" color="#ffffffc0" />
+                  <Text style={styles.dateText}>
+                    {date().toLocalDateString(reservation.fullDate)}
+                  </Text>
+                </View>
+                <View style={styles.dateBox}>
+                  <Icon size={18} name="clock-time-four" color="#ffffffc0" />
+                  <Text style={styles.dateText}>{reservation.time}</Text>
+                </View>
+                {reservation.seen && (
+                  <Text style={styles.seen}>
+                    <Icon size={18} name="check" color="#ffffffc0" /> Vue
+                  </Text>
+                )}
+              </View>
+              <View style={styles.body}>
+                <View style={styles.textBox}>
+                  <Text style={styles.titleBox}>Description</Text>
+                  <Text style={styles.descText}>
+                    {reservation.serviceDescription}
+                  </Text>
+                </View>
+                <View style={styles.textBox}>
+                  <Text style={styles.titleBox}>Prix</Text>
+                  <Text style={styles.descText}>
+                    {reservation.servicePrice}
+                  </Text>
+                </View>
+                <View style={styles.textBox}>
+                  <Text style={styles.titleBox}>Maker</Text>
+                  <Text style={styles.descText}>anyone</Text>
+                </View>
+                <View style={styles.textBox}>
+                  <Text style={styles.titleBox}>Durée</Text>
+                  <Text style={styles.descText}>
+                    {`${reservation.serviceDuration} min `}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            {reservation.isCanceled ? (
+              <View style={styles.canceledBox}>
+                <Text style={styles.canceledText}>canceled</Text>
+              </View>
+            ) : (
+              <View style={styles.footer}>
+                <TouchableOpacity style={styles.button} onPress={handelEdit}>
+                  <Icon size={25} name="calendar-edit" color="#333333" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={toggleIsCancelAlertVisible}
+                >
+                  <Icon size={25} name="close" color="#333333" />
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
+      </>
+
       {isCancelAlertVisible && (
         <View style={styles.delAlertContainer}>
           <View style={styles.delAlert}>
@@ -114,7 +142,7 @@ function ReservationView({ navigation, route }) {
             <View style={styles.flexBox}>
               <TouchableOpacity
                 style={styles.delAlertBtn}
-                onPress={handelIsCancelAlertVisible}
+                onPress={toggleIsCancelAlertVisible}
               >
                 <Text style={styles.delAlertBtnTxt}>Non</Text>
               </TouchableOpacity>
@@ -266,57 +294,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 19,
   },
+  canceledBox: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "red",
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    marginLeft: 20,
+    width: 200,
+  },
+  canceledText: {
+    color: "red",
+    fontSize: 14,
+  },
 });
-
-// import React, { useEffect } from 'react';
-// import { StyleSheet, View, Text, Button, Platform } from 'react-native';
-// import * as Calendar from 'expo-calendar';
-
-// export default function App() {
-//   useEffect(() => {
-//     (async () => {
-//       const { status } = await Calendar.requestCalendarPermissionsAsync();
-//       if (status === 'granted') {
-//         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-//         console.log('Here are all your calendars:');
-//         console.log({ calendars });
-//       }
-//     })();
-//   }, []);
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Calendar Module Example</Text>
-//       <Button title="Create a new calendar" onPress={createCalendar} />
-//     </View>
-//   );
-// }
-
-// async function getDefaultCalendarSource() {
-//   const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-//   return defaultCalendar.source;
-// }
-
-// async function createCalendar() {
-//   const defaultCalendarSource =
-//     Platform.OS === 'ios'
-//       ? await getDefaultCalendarSource()
-//       : { isLocalAccount: true, name: 'Expo Calendar' };
-//   const newCalendarID = await Calendar.createCalendarAsync({
-//     title: 'Expo Calendar',
-//     color: 'blue',
-//     entityType: Calendar.EntityTypes.EVENT,
-//     sourceId: defaultCalendarSource.id,
-//     source: defaultCalendarSource,
-//     name: 'internalCalendarName',
-//     ownerAccount: 'personal',
-//     accessLevel: Calendar.CalendarAccessLevel.OWNER,
-//   });
-//   console.log(`Your new calendar ID is: ${newCalendarID}`);
-// }
-// const styles = StyleSheet.create({
-//   container:{
-//     width:200,
-//     height:200,
-//   }
-// });

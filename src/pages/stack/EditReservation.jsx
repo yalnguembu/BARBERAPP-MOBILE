@@ -4,50 +4,79 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  TextInput,
   Dimensions,
+  ScrollView,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/Ionicons";
+import DatePicker from "../../components/Services/DatePicker";
+import TimePicker from "../../components/Services/TimePicker";
+import { Reservation } from "../../domains/reservation";
+import { reservations as reservationApi, reservations } from "../../services";
+import { date } from "../../utils/common";
 
 function EditReservation({ navigation, route }) {
   typeof route.params == "undefined" && navigation.goBack();
   const { id } = route.params;
   const [isCancelAlertVisible, setIsCancelAlertVisible] = useState(false);
   const [reservation, setReservation] = useState({});
-  const [date, setDate] = useState(new Date().toDateString());
-  const [time, setTime] = useState(new Date().toTimeString());
+  const [date, setDate] = useState(new Date().toISOString());
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [service, setService] = useState({});
 
-  const handelDate = (e) => setTime(e.target.value);
-  const handelTime = (e) => setTime(e.target.value);
-  const getReservation = () => {
-    setReservation({
-      id: "33jjjjss",
-      title: "Wache an style coupe",
-      content:
-        "wache and style erjrevnnenvnvn is a haire cut jjddnenddbnd,bnndbnnnn,nijj",
-      date: new Date().toLocaleDateString(),
-      start: new Date().toLocaleTimeString(),
-      end: new Date().toLocaleTimeString(),
-      reminder: true,
-    });
-  };
-  const handelIsCancelAlertVisible = () => {
+  const handelService = (e) => setService(e.target.value);
+
+  const toggleIsCancelAlertVisible = () => {
     setIsCancelAlertVisible(!isCancelAlertVisible);
   };
   const cancelEdit = () => {
-    handelIsCancelAlertVisible();
+    toggleIsCancelAlertVisible();
   };
   const cancel = () => {
-    handelIsCancelAlertVisible();
+    toggleIsCancelAlertVisible();
     navigation.goBack();
   };
-  const handelEdit = () => {
-    navigation.goBack();
+  const edit = () => {
+    reservations
+      .update(id, {
+        service,
+        date,
+        time,
+      })
+      .then(() => {
+        navigation.goBack();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  const { reminder, ...other } = reservation;
-  const editReminder = () => setReservation({ ...other, reminder: !reminder });
+
+  const onSelectTime = (value) => {
+    const hours = value.split(":")[0];
+    const minutes = value.split(":")[1];
+    const dateTime = new Date();
+    dateTime.setHours(parseInt(hours));
+    dateTime.setMinutes(parseInt(minutes));
+    setTime(dateTime.toLocaleTimeString());
+  };
+
+  const onSelectDate = (value) => {
+    const newDate = new Date();
+    newDate.setDate(parseInt(date));
+    setDate(newDate);
+  };
+
   useEffect(() => {
-    getReservation();
+    let ignore = false;
+
+    if (!ignore)
+      reservationApi
+        .getById(id)
+        .then((response) => response.data)
+        .then((data) => {
+          setReservation(new Reservation(data));
+        });
+
+    return () => (ignore = true);
   }, []);
 
   return (
@@ -55,52 +84,44 @@ function EditReservation({ navigation, route }) {
       <View style={styles.header}>
         <View style={styles.flexRow}>
           <TouchableOpacity style={styles.backButton} onPress={cancelEdit}>
-            <Ionicons size={30} name="close-outline" color="#333333" />
+            <Icon size={30} name="close-outline" color="#333333" />
           </TouchableOpacity>
           <Text style={styles.headerText}>Edit reservation</Text>
-          <TouchableOpacity style={styles.backButton} onPress={handelEdit}>
-            <Ionicons size={30} name="checkmark-outline" color="#333333" />
+          <TouchableOpacity style={styles.backButton} onPress={edit}>
+            <Icon size={30} name="checkmark-outline" color="#333333" />
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.main}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        ></ScrollView>
+
+        <TouchableOpacity
+          style={styles.ChooseButton}
+          onPress={() => navigation.navigate("Choose-reservation")}
+        >
+          <Icon name="repeat" size={30} color="gray" />
+          <Text style={styles.ChooseButtonText}>Choose a service</Text>
+        </TouchableOpacity>
         <View style={styles.textBox}>
-          <Text style={styles.titleBox}>{reservation.title}</Text>
-          <Text style={styles.descText}>{reservation.content}</Text>
-        </View>
-        <View style={styles.textBox}>
-          <Text style={styles.titleBox}>Date</Text>
-          <View style={styles.dateBox}>
-            <TextInput
-              value={date}
-              onChange={handelDate}
-              style={styles.input}
-            />
-            <TouchableOpacity>
-              <Ionicons name="calendar" size={25} />
-            </TouchableOpacity>
+          <View style={{ marginTop: 15 }}>
+            <View style={styles.flexBox}>
+              <Text>Date</Text>
+              <Icon name="chevron-forward" size={15} />
+            </View>
+            <DatePicker onSelect={onSelectDate} />
           </View>
-        </View>
-        <View style={styles.textBox}>
-          <Text style={styles.titleBox}>Heure</Text>
-          <View style={styles.dateBox}>
-            <TextInput
-              value={time.substr(0, 5)}
-              onChange={handelTime}
-              style={styles.input}
-            />
-            <TouchableOpacity>
-              <Ionicons name="time" size={25} />
-            </TouchableOpacity>
+          <View style={{ marginTop: 15 }}>
+            <View style={styles.flexBox}>
+              <Text>Hour</Text>
+              <Icon name="chevron-forward" size={15} />
+            </View>
+            <TimePicker onSelect={onSelectTime} />
           </View>
-        </View>
-        <View style={styles.textBox}>
-          <Text style={styles.titleBox}>Rappel</Text>
-          <TouchableOpacity style={styles.flexRow} onPress={editReminder}>
-            <Text style={styles.descText}>
-              {reservation.reminder === true ? "oui" : "false"}
-            </Text>
-            <Ionicons name="chevron-forward" size={25} />
+          <TouchableOpacity style={styles.loginBtn} onPress={() => {}}>
+            <Text style={styles.loginBtnTxt}>Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -111,7 +132,7 @@ function EditReservation({ navigation, route }) {
             <View style={styles.flexBox}>
               <TouchableOpacity
                 style={styles.delAlertBtn}
-                onPress={handelIsCancelAlertVisible}
+                onPress={toggleIsCancelAlertVisible}
               >
                 <Text style={styles.delAlertBtnTxt}>Non</Text>
               </TouchableOpacity>
@@ -244,5 +265,19 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 19,
+  },
+  ChooseButton: {
+    borderWidth: 1,
+    borderRadius: 5,
+    flexDirection: "row",
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderColor: "gray",
+    alignItems: "center",
+  },
+  ChooseButtonText: {
+    marginLeft: 10,
+    color: "gray",
   },
 });

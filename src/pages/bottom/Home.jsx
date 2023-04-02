@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useSelector } from "react-redux";
 import Service from "../../components/Home/Service";
 import SearchBar from "../../components/Home/SearchBar";
 import ServiceHorizontal from "../../components/Home/ServiceHorizontal";
@@ -16,7 +17,10 @@ import { useEffect } from "react";
 import { services as apiServices } from "../../services";
 
 function Home({ navigation }) {
+  const { currentUser } = useSelector((state) => state.user);
   const [services, setServices] = useState([]);
+  const [popularServices, setPopularServices] = useState([]);
+  const [recommendedServices, setRecommendedServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const setUsername = (username) => {
     const settle = username.split(" ")[0].substring(0, 12);
@@ -30,6 +34,10 @@ function Home({ navigation }) {
         .then((response) => response.data)
         .then((data) => {
           setServices(data);
+          setPopularServices(data.sort(() => 0.5 - Math.random()).slice(0, 5));
+          setRecommendedServices(
+            data.sort(() => 0.5 - Math.random()).slice(0, 5)
+          );
           setIsLoading(false);
         });
     });
@@ -52,7 +60,9 @@ function Home({ navigation }) {
         <View>
           <Text style={styles.salutation}>
             Hey,{" "}
-            <Text style={styles.username}>{setUsername("Mazeking")} 👋🏾</Text>
+            <Text style={styles.username}>
+              {currentUser.username ? setUsername(currentUser.username) : ""} 👋🏾
+            </Text>
           </Text>
           <Text style={styles.date}>{new Date().toDateString()}</Text>
         </View>
@@ -70,11 +80,13 @@ function Home({ navigation }) {
               <View style={{ marginTop: 15 }}>
                 <View style={styles.flexBox}>
                   <Text style={styles.h1}>Last reservetion</Text>
-                  <Icon name="arrow-right" size={20} color="#333" />
+                  <Icon name="chevron-right" size={20} color="#333" />
                 </View>
                 <ServiceHorizontal
-                  service={services[0]}
-                  onClick={() => navigation.navigate("detail", {})}
+                  service={services.at(-1)}
+                  onClick={() =>
+                    navigation.navigate("detail", { id: services[0]._id })
+                  }
                 />
               </View>
             ) : (
@@ -95,7 +107,7 @@ function Home({ navigation }) {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               >
-                {services.map((service, index) => (
+                {recommendedServices.map((service, index) => (
                   <Service
                     key={index}
                     service={service}
@@ -113,7 +125,7 @@ function Home({ navigation }) {
               <View style={styles.flexBox}>
                 <Text style={styles.h1}>Popular services</Text>
                 <TouchableOpacity>
-                  <Icon name="arrow-right" size={20} color="#333" />
+                  <Icon name="chevron-right" size={20} color="#333" />
                 </TouchableOpacity>
               </View>
               <ScrollView
@@ -121,7 +133,7 @@ function Home({ navigation }) {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               >
-                {services.map((service, index) => (
+                {popularServices.map((service, index) => (
                   <Service
                     key={index}
                     service={service}
