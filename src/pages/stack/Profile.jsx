@@ -10,12 +10,15 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logOut } from "../../redux/userReducer";
 import { User } from "../../domains/user";
 import { user as userApi } from "../../services";
 import axios from "axios";
+import { setAuthToken } from "../../services";
 
 function Profile({ navigation }) {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [user, setUser] = useState({
     picture: "",
@@ -29,6 +32,11 @@ function Profile({ navigation }) {
   };
   const handelDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+  const signOut = () => {
+    dispatch(logOut());
+    setAuthToken("");
+    navigation.navigate("onboarding");
   };
 
   useEffect(() => {
@@ -94,19 +102,19 @@ function Profile({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity style={styles.textBox} onPress={() => {}}>
             <Icon name="help-circle-outline" size={27} />
-            <Text style={styles.titleBox}>Aide</Text>
+            <Text style={styles.titleBox}>Help</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.textBox} onPress={() => {}}>
             <Icon name="share-outline" size={27} />
-            <Text style={styles.titleBox}>Partager</Text>
+            <Text style={styles.titleBox}>Share</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.textBox} onPress={() => {}}>
             <Text style={styles.titleBox2}>Dark mode</Text>
             <Switch value={darkMode} onChange={handelDarkMode} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.textBox} onPress={() => {}}>
+          <TouchableOpacity style={styles.textBox} onPress={signOut}>
             <Icon name="log-out-outline" size={27} />
-            <Text style={styles.titleBox}>Déconnection</Text>
+            <Text style={styles.titleBox}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </View>

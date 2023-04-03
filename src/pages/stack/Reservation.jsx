@@ -50,7 +50,6 @@ function ReservationView({ navigation, route }) {
         .getById(id)
         .then((response) => response.data)
         .then((data) => {
-          console.log(new Reservation(data).isCanceled);
           setReservation(new Reservation(data));
         });
 

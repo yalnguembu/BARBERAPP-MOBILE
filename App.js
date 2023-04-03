@@ -19,6 +19,7 @@ import EditReservation from "./src/pages/stack/EditReservation";
 import ReservationSearch from "./src/pages/stack/ReservationSearch";
 import { store } from "./src/redux/store";
 import ArchivedReservations from "./src/pages/stack/ArchivedReservations";
+import Checkout from "./src/pages/stack/Checkout";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +41,7 @@ export default function App() {
           <Stack.Screen name="cart" component={Cart} />
           <Stack.Screen name="main" component={Main} />
           <Stack.Screen name="detail" component={Detail} />
+          <Stack.Screen name="checkout" component={Checkout} />
           <Stack.Screen name="search" component={Search} />
           <Stack.Screen name="profile" component={Profile} />
           <Stack.Screen name="security" component={Security} />

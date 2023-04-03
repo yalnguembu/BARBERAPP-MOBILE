@@ -23,18 +23,13 @@ function EditProfile({ navigation }) {
   const [username, setUsername] = useState(currentUser.username ?? "");
   const [img, setImg] = useState({});
 
-  const handelEmail = (e) => {
-    setEmail(e.target.value);
-  };
-  const handelUsername = (e) => {
-    setUsername(e.target.value);
-  };
   const handelIsSelectImageVisible = () => {
     setIsSelectImageVisible(!isSelectImageVisible);
   };
   const cancel = () => {
     navigation.goBack();
   };
+
   const save = () => {
     userApi
       .update(currentUser.id, { email, username })
@@ -86,7 +81,7 @@ function EditProfile({ navigation }) {
           <Text style={styles.titleBox}>Email</Text>
           <TextInput
             value={email}
-            onChange={handelEmail}
+            onChangeText={setEmail}
             style={styles.dateBox}
           />
         </View>
@@ -94,7 +89,7 @@ function EditProfile({ navigation }) {
           <Text style={styles.titleBox}>Username</Text>
           <TextInput
             value={username}
-            onChange={handelUsername}
+            onChangeText={setUsername}
             style={styles.dateBox}
           />
         </View>

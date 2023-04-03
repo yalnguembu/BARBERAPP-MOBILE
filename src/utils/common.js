@@ -6,7 +6,7 @@ export const date = () => {
     return daysOfWeek[day.getDay() - 1];
   };
   const dateToDayOfWeek = (date) => {
-    return daysOfWeek[new Date(date).getDay() - 1];
+    return daysOfWeek.at(new Date(date).getDay());
   };
 
   const dateToDayOfMonth = (date) => {

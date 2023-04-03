@@ -6,112 +6,46 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
+  Text,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import TabBar from "../../components/Services/TabBar";
-import ServicesList from "../../components/Search/ServicesList";
+import Service from "../../components/Services/Service";
+import { services as apiServices } from "../../services";
 
 function Search({ navigation }) {
-  const services = [
-    {
-      categorie: "coupe",
-      services: [
-        {
-          id: 1,
-          title: "Coupe",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-        {
-          id: 1,
-          title: "Tracage",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-        {
-          id: 1,
-          title: "Lavage",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-      ],
-    },
-    {
-      categorie: "tracage",
-      services: [
-        {
-          id: 1,
-          title: "Teinte",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-        {
-          id: 1,
-          title: "Barbe",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-        {
-          id: 1,
-          title: "Tresse",
-          img: require("../../assets/images/service-1.png"),
-          desc: "lorem ipsum description text",
-        },
-      ],
-    },
-  ];
-
-  const [activeTab, setActiveTab] = useState("tout");
-  const [filter, setFilter] = useState("");
+  const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filteredServices, setFilteredServices] = useState([]);
   const [search, setSearch] = useState("");
-  const handelActiveTab = (tab) => {
-    setActiveTab(tab);
-  };
-  const handelFilter = (filter) => {
-    setFilter(filter);
-  };
 
-  const handelSearch = (search) => {
-    setSearch(search);
-  };
-  //   const
-  const serviceFilter = (filter = null, date = null) => {
-    switch (filter) {
-      case "ALL":
-        console.log(filter);
-        break;
-
-      case "DATE":
-        console.log(filter);
-        break;
-
-      case "ALPHA_ASC":
-        console.log(filter);
-        break;
-
-      case "NEW":
-        console.log(filter);
-        break;
-
-      case "OLD":
-        console.log(filter);
-        break;
-
-      case "SEEN":
-        console.log(filter);
-        break;
-
-      case "GOTO_DATE":
-        console.log(filter);
-        if (date !== null) console.log(date);
-
-        break;
-
-      default:
-        break;
-    }
+  const handelSearch = (value) => {
+    setSearch(value);
+    setTimeout(() => setFilteredServices(filter(value, services)), 500);
   };
 
+  const filter = (keyWord, datas) => {
+    keyWord = keyWord.toLowerCase();
+    return datas?.filter(
+      (datas) =>
+        datas?.name?.toLowerCase().search(keyWord) !== -1 ||
+        datas?.category?.toLowerCase().search(keyWord) !== -1
+    );
+  };
+
+  useEffect(() => {
+    const removeEventLinstener = navigation.addListener("focus", () => {
+      apiServices
+        .getAll()
+        .then((response) => response.data)
+        .then((data) => {
+          setIsLoading(false);
+          setServices(data);
+        });
+    });
+
+    return removeEventLinstener;
+  }, [navigation]);
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
@@ -145,17 +79,31 @@ function Search({ navigation }) {
         </View>
       </View>
       <View style={styles.tabBarContainer}>
-        <TabBar handelActiveTab={handelActiveTab} activeTab={activeTab} />
+        {/* <TabBar handelActiveTab={handelActiveTab} activeTab={activeTab} /> */}
       </View>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.main}>
-          {services.map((service, index) => (
-            <ServicesList
-              servicesList={service}
-              key={index}
-              navigation={navigation}
-            />
-          ))}
+        <View style={styles.servicesBox}>
+          {!search ? (
+            <></>
+          ) : isLoading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" />
+            </View>
+          ) : filteredServices.length ? (
+            filteredServices.map((service, index) => (
+              <Service
+                key={index}
+                service={service}
+                onClick={() =>
+                  navigation.navigate("detail", { id: service._id })
+                }
+              />
+            ))
+          ) : (
+            <Text style={{ textAlign: "center" }}>
+              Oups! nothing found please something else
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -222,10 +170,12 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 0,
   },
-  main: {
-    flex: 1,
-    flexDirection: "column",
+  servicesBox: {
+    width: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
+    marginTop: 15,
     padding: 15,
   },
   shadow: {

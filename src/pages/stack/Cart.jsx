@@ -13,15 +13,17 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { reservations as reservationApi } from "../../services";
 import { Reservation } from "../../domains/reservation";
 import CartItem from "../../components/Store/CartItem";
+import { useSelector } from "react-redux";
 
 const Cart = ({ navigation }) => {
   const [reservations, setResevations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const removeEventLinstener = navigation.addListener("focus", () => {
       reservationApi
-        .getAll()
+        .getByClient(currentUser.id)
         .then((response) => response.data)
         .then((data) => {
           setIsLoading(false);
@@ -42,7 +44,7 @@ const Cart = ({ navigation }) => {
           <Text style={styles.title}>Cart</Text>
           <TouchableOpacity
             style={styles.buyButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("checkout")}
           >
             <Text style={styles.buyButtonText}>checkout</Text>
           </TouchableOpacity>

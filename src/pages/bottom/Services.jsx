@@ -36,7 +36,7 @@ function Services({ route, navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Services</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("search")}>
+        <TouchableOpacity onPress={() => navigation.navigate("notification")}>
           <Icon size={22} name="bell" color="#333333" />
         </TouchableOpacity>
       </View>

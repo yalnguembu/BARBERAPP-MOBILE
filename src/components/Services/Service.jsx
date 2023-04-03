@@ -22,8 +22,8 @@ function Service({ service, onClick }) {
           <View style={styles.bgCat}>
             <Text style={styles.category}>{category}</Text>
           </View>
-          <Text style={styles.duration}>{duration} min</Text>
         </View>
+        <Text style={styles.duration}>{duration} min</Text>
         <Text style={styles.name}>{name && name.substring(0, 24)}</Text>
         <Text style={styles.price}>{price + " "}xaf</Text>
       </View>

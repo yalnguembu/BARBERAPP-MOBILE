@@ -23,9 +23,6 @@ function Register({ navigation }) {
   const [secure, setSecure] = useState(true);
   const [secure2, setSecure2] = useState(true);
 
-  const handelConfirmPass = (e) => setConfirmPass(e.target.value);
-  const handelEmail = (e) => setEmail(e.target.value);
-  const handelPassword = (e) => setPassword(e.target.value);
   const handelSecure = () => setSecure(!secure);
   const handelSecure2 = () => setSecure2(!secure2);
 
@@ -50,7 +47,6 @@ function Register({ navigation }) {
         .register({ email, password })
         .then((response) => response.data)
         .then(async (data) => {
-          console.log(data);
           dispatch(setUser(data));
           setAuthToken(data.accessToken);
           navigation.navigate("main");
@@ -90,15 +86,17 @@ function Register({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="email"
+          placeholderTextColor="gray"
           value={email}
-          onChange={handelEmail}
+          onChangeText={setEmail}
         />
 
         <View style={styles.password}>
           <TextInput
             placeholder="password"
+            placeholderTextColor="gray"
             value={password}
-            onChange={handelPassword}
+            onChangeText={setPassword}
             style={styles.passwordInput}
             secureTextEntry={secure ? true : false}
           />
@@ -110,7 +108,7 @@ function Register({ navigation }) {
           <TextInput
             placeholder="Confirm password"
             value={confirmPass}
-            onChange={handelConfirmPass}
+            onChangeText={setConfirmPass}
             style={styles.passwordInput}
             secureTextEntry={secure2 ? true : false}
           />

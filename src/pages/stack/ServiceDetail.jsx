@@ -52,7 +52,7 @@ function Detail({ navigation, route }) {
 
     reservations
       .create(reservation)
-      .then((response) => {
+      .then(() => {
         navigation.navigate("reservations");
       })
       .catch((error) => {
@@ -67,12 +67,6 @@ function Detail({ navigation, route }) {
     dateTime.setHours(parseInt(hours));
     dateTime.setMinutes(parseInt(minutes));
     setTime(dateTime.toLocaleTimeString());
-  };
-
-  const onSelectDate = (value) => {
-    const newDate = new Date();
-    newDate.setDate(parseInt(date));
-    setDate(newDate);
   };
 
   useEffect(() => {
@@ -136,7 +130,7 @@ function Detail({ navigation, route }) {
                   <Text>Date</Text>
                   <Icon name="chevron-forward" size={15} />
                 </View>
-                <DatePicker onSelect={onSelectDate} />
+                <DatePicker onSelect={setDate} />
               </View>
               <View sty4={{ marginTop: 15 }}>
                 <View style={styles.flexBox}>
@@ -176,6 +170,12 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
+  },
+  loaderContainer: {
+    width: Dimensions.get("screen").width,
+    height: 600,
+    alignItems: "center",
+    justifyContent: "center",
   },
   backButton: {
     position: "absolute",

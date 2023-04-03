@@ -18,7 +18,7 @@ const dates = [
   { id: 14, value: "13" },
   { id: 15, value: "14" },
   { id: 16, value: "15" },
-  { id: 18, value: "16" },
+  { id: 17, value: "16" },
   { id: 18, value: "17" },
   { id: 19, value: "18" },
   { id: 20, value: "19" },
@@ -37,12 +37,14 @@ const dates = [
 export default function DatePicker({ onSelect, month }) {
   const [selectedTime, setSelectedTime] = useState(dates[0].id);
 
-  const handelSelect = (time) => {
-    setSelectedTime(time.id);
-    onSelect(time.value);
+  const handelSelect = (date) => {
+    setSelectedTime(date.id);
+    const newDate = new Date();
+    newDate.setDate(date.value);
+    onSelect(newDate.toISOString());
   };
 
-  const TimeItem = ({ time }) => {
+  const DateItem = ({ time }) => {
     return (
       <TouchableOpacity
         style={selectedTime === time.id ? styles.selectedItem : styles.item}
@@ -62,7 +64,7 @@ export default function DatePicker({ onSelect, month }) {
               : styles.dayTextItem
           }
         >
-          {date().dateToDayOfWeek(new Date())}
+          {date().dateToDayOfWeek(new Date().setDate(time.id))}
         </Text>
       </TouchableOpacity>
     );
@@ -75,7 +77,7 @@ export default function DatePicker({ onSelect, month }) {
       style={styles.main}
     >
       {dates.map((time, index) => (
-        <TimeItem key={index} time={time} />
+        <DateItem key={index} time={time} />
       ))}
     </ScrollView>
   );

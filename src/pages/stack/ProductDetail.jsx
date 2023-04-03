@@ -46,7 +46,6 @@ function Detail({ navigation, route }) {
       },
       maker: "anyone",
     };
-    console.log(reservation);
 
     reservations
       .create(reservation)
@@ -119,11 +118,11 @@ function Detail({ navigation, route }) {
               <View sty4={{ marginTop: 15 }}>
                 <View style={styles.buttonGroup}>
                   <TouchableOpacity style={styles.actionButton}>
-                    <Icon size={25} name="remove" color="dark" />
+                    <Icon size={25} name="remove" color="black" />
                   </TouchableOpacity>
                   <Text style={styles.number}>{1}</Text>
                   <TouchableOpacity style={styles.actionButton}>
-                    <Icon size={25} name="add" color="dark" />
+                    <Icon size={25} name="add" color="black" />
                   </TouchableOpacity>
                 </View>
               </View>
